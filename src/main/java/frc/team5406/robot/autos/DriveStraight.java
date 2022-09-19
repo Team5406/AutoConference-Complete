@@ -35,7 +35,7 @@ public class DriveStraight {
       }
 
     public Command getAutonomousCommand() {
-        drive.setHeading();
+        drive.resetGyro();
         drive.reset();
         var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(

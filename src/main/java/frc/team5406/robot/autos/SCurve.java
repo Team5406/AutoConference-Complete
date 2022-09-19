@@ -36,7 +36,7 @@ public class SCurve {
       }
 
     public Command getAutonomousCommand() {
-        drive.setHeading();
+        drive.resetGyro();
         drive.reset();
         var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
