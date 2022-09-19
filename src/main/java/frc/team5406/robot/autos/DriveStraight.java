@@ -28,15 +28,17 @@ import frc.team5406.robot.subsystems.DriveSubsystem;
 public class DriveStraight {
 
     private final DriveSubsystem drive;
-    XboxController driverGamepad = new XboxController(1);
 
     public DriveStraight (DriveSubsystem subsystem) {
         drive = subsystem;
       }
 
     public Command getAutonomousCommand() {
+        //Reset the Gyro and Odoemtry on the robot at the start of Auto.
         drive.resetGyro();
         drive.reset();
+        
+        //Create a constraint for the robot. S, V, and A Volts are determined using SysID, your values may vary. 
         var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
             new SimpleMotorFeedforward(Constants.AutoConstants.S_VOLTS,
@@ -45,6 +47,7 @@ public class DriveStraight {
             Constants.AutoConstants.DRIVE_KINEMATICS,
             10);
 
+    //Set a trajectory Config to be used when following the path set. Set the max speed (Meters per second), and Velocity (Meters per second^2)
     TrajectoryConfig config =
         new TrajectoryConfig(Constants.AutoConstants.MAX_SPEED_METERS_PER_SECOND,
                              Constants.AutoConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED)
@@ -55,6 +58,7 @@ public class DriveStraight {
         /* Rotation2d endpoint = new Rotation2d();
         endpoint = Rotation2d.fromDegrees(45); */
 
+    //Set the path to be followed - in this case, forward 1.5 meters.
     Trajectory pathOne = TrajectoryGenerator.generateTrajectory(
         new Pose2d(0, 0, new Rotation2d(0)),
         List.of(
@@ -67,7 +71,7 @@ public class DriveStraight {
     
 
     
-    
+        //Create a new RamseteCommand to follow the path
         RamseteCommand ramseteCommand = new RamseteCommand(
           
             pathOne,
