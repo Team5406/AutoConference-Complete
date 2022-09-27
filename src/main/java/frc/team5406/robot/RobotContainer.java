@@ -7,6 +7,7 @@ package frc.team5406.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team5406.robot.autos.DriveStraight;
 import frc.team5406.robot.autos.SCurve;
 import frc.team5406.robot.commands.DefaultDrive;
@@ -47,6 +48,8 @@ public class RobotContainer {
     // Add commands to the autonomous command chooser
     m_chooser.setDefaultOption("Drive Straight Auto", driveStraight.getAutonomousCommand());
     m_chooser.addOption("SCurve", sCurve.getAutonomousCommand());
+
+    SmartDashboard.putData(m_chooser);
   }
 
   /**

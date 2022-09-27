@@ -12,11 +12,14 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -25,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team5406.robot.Constants;
 
 public class DriveSubsystem extends SubsystemBase {
-  //Create 4 new SparkMAX Objects - Used to control the drive motors. 
+  // Create 4 new SparkMAX Objects - Used to control the drive motors.
   private CANSparkMax leftDrive = new CANSparkMax(Constants.MotorPorts.MOTOR_DRIVE_LEFT_ONE, MotorType.kBrushless);
   private CANSparkMax leftDriveFollower = new CANSparkMax(Constants.MotorPorts.MOTOR_DRIVE_LEFT_TWO,
       MotorType.kBrushless);
@@ -33,10 +36,11 @@ public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax rightDriveFollower = new CANSparkMax(Constants.MotorPorts.MOTOR_DRIVE_RIGHT_TWO,
       MotorType.kBrushless);
 
-  //Create 2 Encoder objects - used to read the Position and Velocity values from the motors.
+  // Create 2 Encoder objects - used to read the Position and Velocity values from
+  // the motors.
   private RelativeEncoder leftEncoder, rightEncoder;
 
-  //Create 2 PID Controllers
+  // Create 2 PID Controllers
   private SparkMaxPIDController leftMotorPID, rightMotorPID;
 
   private DifferentialDrive drive = new DifferentialDrive(leftDrive, rightDrive);
@@ -44,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.AutoConstants.V_VOLTS,
       Constants.AutoConstants.A_VOLTS);
 
-  //Create a new NavX Object - used for Gyro and Odoemtry
+  // Create a new NavX Object - used for Gyro and Odoemtry
   AHRS gyro = new AHRS(SPI.Port.kMXP);
   Pose2d pose = new Pose2d();
   DifferentialDriveOdometry odometry;
@@ -52,41 +56,45 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(
       Constants.AutoConstants.TRACK_WIDTH_METERS);
 
+  private final DifferentialDrivePoseEstimator poseEstimator = new DifferentialDrivePoseEstimator(
+      getHeading(), new Pose2d(), VecBuilder.fill(0.05, 0.05, 0.15, 0.15, Units.degreesToRadians(5)),
+      VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(10)), VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(3)));
 
   /**
    * Setup the motors each time a "DriveSubsystem" object is made.
    */
   public void setupMotors() {
-    //Restore each of the SparkMax Controllers to Factory Settings.
+    // Restore each of the SparkMax Controllers to Factory Settings.
     leftDriveFollower.restoreFactoryDefaults();
     rightDriveFollower.restoreFactoryDefaults();
     rightDrive.restoreFactoryDefaults();
     leftDrive.restoreFactoryDefaults();
 
-    //Have the "follower" motors follow the main SparkMAX's
+    // Have the "follower" motors follow the main SparkMAX's
     leftDriveFollower.follow(leftDrive, false);
     rightDriveFollower.follow(rightDrive, false);
 
-    //Invert the left side of the drive train.
-    rightDrive.setInverted(false);
-    leftDrive.setInverted(true);
+    // Invert the left side of the drive train.
+    rightDrive.setInverted(true);
+    leftDrive.setInverted(false);
 
-    //Disable motor safety for our drivetrain - Since we are not using PWM, it doesn't make too much of a difference
+    // Disable motor safety for our drivetrain - Since we are not using PWM, it
+    // doesn't make too much of a difference
     drive.setSafetyEnabled(false);
 
-    //Set each SparkMAX to a current limit of 40amps.
+    // Set each SparkMAX to a current limit of 40amps.
     leftDrive.setSmartCurrentLimit(Constants.CurrentLimit.CURRENT_LIMIT_DRIVE_LEFT);
     leftDriveFollower.setSmartCurrentLimit(Constants.CurrentLimit.CURRENT_LIMIT_DRIVE_LEFT);
     rightDrive.setSmartCurrentLimit(Constants.CurrentLimit.CURRENT_LIMIT_DRIVE_RIGHT);
     rightDriveFollower.setSmartCurrentLimit(Constants.CurrentLimit.CURRENT_LIMIT_DRIVE_RIGHT);
 
-    //Get the PID controllers and encoder profiles from the SparkMAXs
+    // Get the PID controllers and encoder profiles from the SparkMAXs
     leftMotorPID = leftDrive.getPIDController();
     rightMotorPID = rightDrive.getPIDController();
     leftEncoder = leftDrive.getEncoder();
     rightEncoder = rightDrive.getEncoder();
 
-    //Set PID Values for each Motor.
+    // Set PID Values for each Motor.
     leftMotorPID.setP(Constants.PID.LEFT_DRIVE_PID0_P, 0);
     leftMotorPID.setI(Constants.PID.LEFT_DRIVE_PID0_I, 0);
     leftMotorPID.setD(Constants.PID.LEFT_DRIVE_PID0_D, 0);
@@ -115,11 +123,12 @@ public class DriveSubsystem extends SubsystemBase {
     rightMotorPID.setFF(Constants.PID.RIGHT_DRIVE_PID1_F, 1);
     rightMotorPID.setOutputRange(Constants.PID.OUTPUT_RANGE_MIN, Constants.PID.OUTPUT_RANGE_MAX, 1);
 
-    //Set the time it takes to go from 0 to full power on the drive motors.
+    // Set the time it takes to go from 0 to full power on the drive motors.
     rightDrive.setOpenLoopRampRate(0.05);
     leftDrive.setOpenLoopRampRate(0.05);
 
-    //Set the Conversion factors of the encoders from the default units to Meters and Meters/Second
+    // Set the Conversion factors of the encoders from the default units to Meters
+    // and Meters/Second
     leftEncoder.setPositionConversionFactor(
         Constants.GearRatios.GEAR_RATIO_DRIVE * Math.PI * Constants.Other.DRIVE_WHEEL_DIAMETER);
     leftEncoder.setVelocityConversionFactor(
@@ -129,11 +138,10 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.GearRatios.GEAR_RATIO_DRIVE * Math.PI * Constants.Other.DRIVE_WHEEL_DIAMETER);
     rightEncoder.setVelocityConversionFactor(
         (Constants.GearRatios.GEAR_RATIO_DRIVE * Math.PI * Constants.Other.DRIVE_WHEEL_DIAMETER) / 60);
-    
-    
+
     resetEncoders();
 
-    //Burn all the changes to the SparkMAX's flash.
+    // Burn all the changes to the SparkMAX's flash.
     leftDrive.burnFlash();
     leftDriveFollower.burnFlash();
     rightDrive.burnFlash();
@@ -142,11 +150,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   /**
    * 
-   * @param speed - Speed you'd wish to go
+   * @param speed    - Speed you'd wish to go
    * @param rotation - Speed you'd wish to turn
    */
   public void arcadeDrive(double speed, double rotation) {
-    drive.arcadeDrive(speed, rotation);
+    drive.arcadeDrive(speed, -1 * rotation);
   }
 
   /**
@@ -177,7 +185,7 @@ public class DriveSubsystem extends SubsystemBase {
     return rightEncoder.getVelocity();
   }
 
-    /**
+  /**
    *
    * @return Encoders Average velocity (M/S)
    */
@@ -223,15 +231,16 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Uses PID control, as well as a FeedFoward Value to determine how fast to move each motor to reach a intented target.
+   * Uses PID control, as well as a FeedFoward Value to determine how fast to move
+   * each motor to reach a intented target.
+   * 
    * @param leftSpeed
    * @param rightSpeed
    */
   public void outputSpeeds(double leftSpeed, double rightSpeed) {
     double origLeftSpeed = leftSpeed;
     double origRightSpeed = rightSpeed;
-    leftSpeed /= Units.inchesToMeters(Constants.Other.INCHES_PER_REV / Constants.Other.SECONDS_PER_MINUTE);
-    rightSpeed /= Units.inchesToMeters(Constants.Other.INCHES_PER_REV / Constants.Other.SECONDS_PER_MINUTE);
+
     SmartDashboard.putNumber("Orig Left Speed", origLeftSpeed);
     SmartDashboard.putNumber("Orig Right Speed", origRightSpeed);
     SmartDashboard.putNumber("Left Speed", leftSpeed);
@@ -246,9 +255,9 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Arb FF L", arbFFLeft);
     SmartDashboard.putNumber("Arb FF R", arbFFRight);
 
-    leftMotorPID.setReference(leftSpeed, ControlType.kVelocity, 0, arbFFLeft,
+    leftMotorPID.setReference(leftSpeed, ControlType.kVelocity, 1, arbFFLeft,
         SparkMaxPIDController.ArbFFUnits.kVoltage);
-    rightMotorPID.setReference(rightSpeed, ControlType.kVelocity, 0, arbFFRight,
+    rightMotorPID.setReference(rightSpeed, ControlType.kVelocity, 1, arbFFRight,
         SparkMaxPIDController.ArbFFUnits.kVoltage);
     drive.feed();
   }
@@ -282,6 +291,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /**
    * Reset the Odemetry
+   * 
    * @param pose - Position on the field
    */
   public void resetOdometry(Pose2d pose) {
@@ -289,15 +299,32 @@ public class DriveSubsystem extends SubsystemBase {
     odometry.resetPosition(pose, getHeading());
   }
 
+  public void setPose(Pose2d pose) {
+    resetEncoders();
+    poseEstimator.resetPosition(pose, getHeading());
+  }
+
+  public void updateOdometry() {
+    poseEstimator.update(getHeading(), getCurrentWheelSpeeds(), getLeftDistance(), getRightDistance());
+  }
+
+  public DifferentialDriveWheelSpeeds getCurrentWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(
+        getLeftSpeed(),
+        getRightSpeed());
+  }
+
   /**
    * Setup all the motors each time this class is created.
    */
   public DriveSubsystem() {
+    odometry = new DifferentialDriveOdometry(getHeading());
     setupMotors();
   }
 
   @Override
   public void periodic() {
+    pose = odometry.update(getHeading(), getLeftDistance(), getRightDistance());
   }
 
 }

@@ -28,25 +28,25 @@ public final class Constants {
     }
 
     public static final class PID {
-        public static final double LEFT_DRIVE_PID0_P = 9e-5;
+        public static final double LEFT_DRIVE_PID0_P = 0.013979; //Position
         public static final double LEFT_DRIVE_PID0_I = 0;
         public static final double LEFT_DRIVE_PID0_D = 0;
         public static final double LEFT_DRIVE_PID0_F = 0;
 
-        public static final double RIGHT_DRIVE_PID0_P = 9e-5;
+        public static final double RIGHT_DRIVE_PID0_P = 0.013979;
         public static final double RIGHT_DRIVE_PID0_I = 0;
         public static final double RIGHT_DRIVE_PID0_D = 0;
         public static final double RIGHT_DRIVE_PID0_F = 0;
 
-        public static final double LEFT_DRIVE_PID1_P = 3e-1;
+        public static final double LEFT_DRIVE_PID1_P = 1.2615E-06; //Velocity
         public static final double LEFT_DRIVE_PID1_I = 0;
         public static final double LEFT_DRIVE_PID1_D = 0;
-        public static final double LEFT_DRIVE_PID1_F = 1.5e-1;
+        public static final double LEFT_DRIVE_PID1_F = 0;
 
-        public static final double RIGHT_DRIVE_PID1_P = 3e-1;
+        public static final double RIGHT_DRIVE_PID1_P = 1.2615E-06;
         public static final double RIGHT_DRIVE_PID1_I = 0;
         public static final double RIGHT_DRIVE_PID1_D = 0;
-        public static final double RIGHT_DRIVE_PID1_F = 1.5e-1;
+        public static final double RIGHT_DRIVE_PID1_F = 0;
 
         public static final double OUTPUT_RANGE_MIN = -1;
         public static final double OUTPUT_RANGE_MAX = 1;
@@ -68,9 +68,9 @@ public final class Constants {
     }
 
     public static final class AutoConstants {
-        public static final double S_VOLTS = 0.209;
-        public static final double V_VOLTS = 2.5;
-        public static final double A_VOLTS = 0.55;
+        public static final double S_VOLTS = 0.16946;
+        public static final double V_VOLTS = 2.8862;
+        public static final double A_VOLTS = 0.42163;
 
         public static final double RAMSETE_B = 2;
         public static final double RAMSETE_ZETA = 0.7;
@@ -92,7 +92,7 @@ public final class Constants {
 
     public static final class Other {
         public static final double DRIVE_WHEEL_DIAMETER = Units.inchesToMeters(6.0); // Meters
-        public static final boolean GYRO_REVERSED = true;
+        public static final boolean GYRO_REVERSED = false;
         public static double INCHES_PER_REV = 1.7164; //Experimentally obtained Math.PI * DRIVE_WHEEL_DIAMETER / GEAR_RATIO_DRIVE;
         public static final int SECONDS_PER_MINUTE = 60;
     }
