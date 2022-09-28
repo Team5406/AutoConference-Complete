@@ -38,12 +38,12 @@ public final class Constants {
         public static final double RIGHT_DRIVE_PID0_D = 0;
         public static final double RIGHT_DRIVE_PID0_F = 0;
 
-        public static final double LEFT_DRIVE_PID1_P = 1.2615E-06; //Velocity
+        public static final double LEFT_DRIVE_PID1_P = 1.2166E-06; //Velocity
         public static final double LEFT_DRIVE_PID1_I = 0;
         public static final double LEFT_DRIVE_PID1_D = 0;
         public static final double LEFT_DRIVE_PID1_F = 0;
 
-        public static final double RIGHT_DRIVE_PID1_P = 1.2615E-06;
+        public static final double RIGHT_DRIVE_PID1_P = 2.0904E-06;
         public static final double RIGHT_DRIVE_PID1_I = 0;
         public static final double RIGHT_DRIVE_PID1_D = 0;
         public static final double RIGHT_DRIVE_PID1_F = 0;
@@ -53,7 +53,7 @@ public final class Constants {
     }
 
     public static final class GearRatios {
-        public static final double GEAR_RATIO_DRIVE = 11.0 / 1.0;
+        public static final double GEAR_RATIO_DRIVE = 1.0 / 11.0;
     }
 
     public static final class CurrentLimit {
@@ -68,21 +68,30 @@ public final class Constants {
     }
 
     public static final class AutoConstants {
-        public static final double S_VOLTS = 0.16946;
-        public static final double V_VOLTS = 2.8862;
-        public static final double A_VOLTS = 0.42163;
+        public static final double S_VOLTS = 0.17055;
+        public static final double V_VOLTS = 3.0276;
+        public static final double A_VOLTS = 0.26309;
+
+        public static final double S_VOLTS_LEFT = 0.17055;
+        public static final double V_VOLTS_LEFT = 3.0276;
+        public static final double A_VOLTS_LEFT = 0.26309;
+
+        public static final double S_VOLTS_RIGHT = 0.1504;
+        public static final double V_VOLTS_RIGHT = 3.0371;
+        public static final double A_VOLTS_RIGHT = 0.10867;
+
 
         public static final double RAMSETE_B = 2;
         public static final double RAMSETE_ZETA = 0.7;
 
         public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(25.6); // experimentally determined, inches
                                                                                     // to meters
+                                                                                    
         public static final DifferentialDriveKinematics DRIVE_KINEMATICS = new DifferentialDriveKinematics(
                 TRACK_WIDTH_METERS);
 
-        public static final double MAX_SPEED_METERS_PER_SECOND = 2.5;
-        public static final double MAX_ACTUAL_SPEED_METERS_PER_SECOND = 4;
-        public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3;
+        public static final double MAX_SPEED_METERS_PER_SECOND = 2;
+        public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 1;
 
         public static final double DELTA_V_THRESHOLD = 1.9; // Metres per second per loop cycle
 
@@ -91,7 +100,7 @@ public final class Constants {
     }
 
     public static final class Other {
-        public static final double DRIVE_WHEEL_DIAMETER = Units.inchesToMeters(6.0); // Meters
+        public static final double DRIVE_WHEEL_DIAMETER = Units.inchesToMeters(5.775); // Meters
         public static final boolean GYRO_REVERSED = false;
         public static double INCHES_PER_REV = 1.7164; //Experimentally obtained Math.PI * DRIVE_WHEEL_DIAMETER / GEAR_RATIO_DRIVE;
         public static final int SECONDS_PER_MINUTE = 60;

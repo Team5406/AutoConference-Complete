@@ -37,6 +37,7 @@ public class DriveStraight {
         //Reset the Gyro and Odoemtry on the robot at the start of Auto.
         drive.resetGyro();
         drive.reset();
+        drive.setBrakeMode(true);
         
         //Create a constraint for the robot. S, V, and A Volts are determined using SysID, your values may vary. 
         var autoVoltageConstraint =
@@ -64,7 +65,7 @@ public class DriveStraight {
         List.of(
 
         ),
-        new Pose2d(1.5, 0, new Rotation2d(0)),
+        new Pose2d(1.6, 0, new Rotation2d(0)),
         config
     );
 

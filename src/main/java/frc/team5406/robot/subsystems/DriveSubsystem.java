@@ -44,10 +44,12 @@ public class DriveSubsystem extends SubsystemBase {
   private SparkMaxPIDController leftMotorPID, rightMotorPID;
 
   private DifferentialDrive drive = new DifferentialDrive(leftDrive, rightDrive);
-  SimpleMotorFeedforward driveTrain = new SimpleMotorFeedforward(Constants.AutoConstants.S_VOLTS,
-      Constants.AutoConstants.V_VOLTS,
-      Constants.AutoConstants.A_VOLTS);
-
+  SimpleMotorFeedforward driveTrainLeft = new SimpleMotorFeedforward(Constants.AutoConstants.S_VOLTS_LEFT,
+      Constants.AutoConstants.V_VOLTS_LEFT,
+      Constants.AutoConstants.A_VOLTS_LEFT);
+  SimpleMotorFeedforward driveTrainRight = new SimpleMotorFeedforward(Constants.AutoConstants.S_VOLTS_RIGHT,
+      Constants.AutoConstants.V_VOLTS_RIGHT,
+      Constants.AutoConstants.A_VOLTS_RIGHT);
   // Create a new NavX Object - used for Gyro and Odoemtry
   AHRS gyro = new AHRS(SPI.Port.kMXP);
   Pose2d pose = new Pose2d();
@@ -55,10 +57,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(
       Constants.AutoConstants.TRACK_WIDTH_METERS);
-
-  private final DifferentialDrivePoseEstimator poseEstimator = new DifferentialDrivePoseEstimator(
-      getHeading(), new Pose2d(), VecBuilder.fill(0.05, 0.05, 0.15, 0.15, Units.degreesToRadians(5)),
-      VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(10)), VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(3)));
 
   /**
    * Setup the motors each time a "DriveSubsystem" object is made.
@@ -250,8 +248,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Speed (A)", leftEncoder.getVelocity());
     SmartDashboard.putNumber("Right Speed (A)", rightEncoder.getVelocity());
 
-    double arbFFLeft = driveTrain.calculate(origLeftSpeed);
-    double arbFFRight = driveTrain.calculate(origRightSpeed);
+    double arbFFLeft = driveTrainLeft.calculate(origLeftSpeed);
+    double arbFFRight = driveTrainRight.calculate(origRightSpeed);
     SmartDashboard.putNumber("Arb FF L", arbFFLeft);
     SmartDashboard.putNumber("Arb FF R", arbFFRight);
 
@@ -301,11 +299,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void setPose(Pose2d pose) {
     resetEncoders();
-    poseEstimator.resetPosition(pose, getHeading());
-  }
-
-  public void updateOdometry() {
-    poseEstimator.update(getHeading(), getCurrentWheelSpeeds(), getLeftDistance(), getRightDistance());
   }
 
   public DifferentialDriveWheelSpeeds getCurrentWheelSpeeds() {
@@ -325,6 +318,10 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     pose = odometry.update(getHeading(), getLeftDistance(), getRightDistance());
+    SmartDashboard.putNumber("X Pose", pose.getX());
+    SmartDashboard.putNumber("Y Pose", pose.getY());
+    SmartDashboard.putNumber("Left Distance", getLeftDistance());
+    SmartDashboard.putNumber("Right Distance", getRightDistance());
   }
 
 }
