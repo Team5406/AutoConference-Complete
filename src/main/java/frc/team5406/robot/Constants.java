@@ -20,6 +20,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final double ONE_KAYLA = 64.5;
     public static final class MotorPorts {
         public static final int MOTOR_DRIVE_LEFT_ONE = 1; // SparkMax, NEO
         public static final int MOTOR_DRIVE_LEFT_TWO = 2; // SparkMax, NEO
@@ -38,12 +39,12 @@ public final class Constants {
         public static final double RIGHT_DRIVE_PID0_D = 0;
         public static final double RIGHT_DRIVE_PID0_F = 0;
 
-        public static final double LEFT_DRIVE_PID1_P = 1.2166E-06; //Velocity
+        public static final double LEFT_DRIVE_PID1_P = 0.0147; //Velocity
         public static final double LEFT_DRIVE_PID1_I = 0;
         public static final double LEFT_DRIVE_PID1_D = 0;
-        public static final double LEFT_DRIVE_PID1_F = 0;
+        public static final double LEFT_DRIVE_PID1_F = 0.0;
 
-        public static final double RIGHT_DRIVE_PID1_P = 2.0904E-06;
+        public static final double RIGHT_DRIVE_PID1_P = 0.0147;
         public static final double RIGHT_DRIVE_PID1_I = 0;
         public static final double RIGHT_DRIVE_PID1_D = 0;
         public static final double RIGHT_DRIVE_PID1_F = 0;
@@ -68,24 +69,23 @@ public final class Constants {
     }
 
     public static final class AutoConstants {
-        public static final double S_VOLTS = 0.17055;
-        public static final double V_VOLTS = 3.0276;
-        public static final double A_VOLTS = 0.26309;
+        public static final double S_VOLTS = 0.13995;
+        public static final double V_VOLTS = 2.8897;
+        public static final double A_VOLTS = 0.17688;
 
-        public static final double S_VOLTS_LEFT = 0.17055;
-        public static final double V_VOLTS_LEFT = 3.0276;
-        public static final double A_VOLTS_LEFT = 0.26309;
+        public static final double S_VOLTS_LEFT = 0.14489;
+        public static final double V_VOLTS_LEFT = 2.8997;
+        public static final double A_VOLTS_LEFT = 0.13809;
 
-        public static final double S_VOLTS_RIGHT = 0.1504;
-        public static final double V_VOLTS_RIGHT = 3.0371;
-        public static final double A_VOLTS_RIGHT = 0.10867;
+        public static final double S_VOLTS_RIGHT = 0.13995;
+        public static final double V_VOLTS_RIGHT = 2.8897;
+        public static final double A_VOLTS_RIGHT = 0.17688;
 
 
         public static final double RAMSETE_B = 2;
         public static final double RAMSETE_ZETA = 0.7;
 
-        public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(25.6); // experimentally determined, inches
-                                                                                    // to meters
+        public static final double TRACK_WIDTH_METERS = 0.75642; // experimentally determined
                                                                                     
         public static final DifferentialDriveKinematics DRIVE_KINEMATICS = new DifferentialDriveKinematics(
                 TRACK_WIDTH_METERS);
@@ -101,7 +101,7 @@ public final class Constants {
 
     public static final class Other {
         public static final double DRIVE_WHEEL_DIAMETER = Units.inchesToMeters(5.775); // Meters
-        public static final boolean GYRO_REVERSED = false;
+        public static final boolean GYRO_REVERSED = true;
         public static double INCHES_PER_REV = 1.7164; //Experimentally obtained Math.PI * DRIVE_WHEEL_DIAMETER / GEAR_RATIO_DRIVE;
         public static final int SECONDS_PER_MINUTE = 60;
     }

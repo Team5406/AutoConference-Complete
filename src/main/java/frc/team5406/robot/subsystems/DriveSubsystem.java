@@ -52,7 +52,6 @@ public class DriveSubsystem extends SubsystemBase {
       Constants.AutoConstants.A_VOLTS_RIGHT);
   // Create a new NavX Object - used for Gyro and Odoemtry
   AHRS gyro = new AHRS(SPI.Port.kMXP);
-  Pose2d pose = new Pose2d();
   DifferentialDriveOdometry odometry;
 
   private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(
@@ -73,8 +72,8 @@ public class DriveSubsystem extends SubsystemBase {
     rightDriveFollower.follow(rightDrive, false);
 
     // Invert the left side of the drive train.
-    rightDrive.setInverted(true);
-    leftDrive.setInverted(false);
+    rightDrive.setInverted(false);
+    leftDrive.setInverted(true);
 
     // Disable motor safety for our drivetrain - Since we are not using PWM, it
     // doesn't make too much of a difference
@@ -152,7 +151,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rotation - Speed you'd wish to turn
    */
   public void arcadeDrive(double speed, double rotation) {
-    drive.arcadeDrive(speed, -1 * rotation);
+    drive.arcadeDrive(-1*speed, rotation, true);
   }
 
   /**
@@ -218,7 +217,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return Rotation turned from the Gyro
    */
   public Rotation2d getHeading() {
-    return Rotation2d.fromDegrees(gyro.getAngle() * (Constants.Other.GYRO_REVERSED ? -1.0 : 1.0));
+    return Rotation2d.fromDegrees(gyro.getYaw() * (Constants.Other.GYRO_REVERSED ? -1.0 : 1.0));
   }
 
   /**
@@ -244,7 +243,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Speed", leftSpeed);
     SmartDashboard.putNumber("Right Speed", rightSpeed);
 
-    SmartDashboard.putNumber("X Translation", pose.getTranslation().getX());
+    SmartDashboard.putNumber("X Translation", getPose().getTranslation().getX());
     SmartDashboard.putNumber("Left Speed (A)", leftEncoder.getVelocity());
     SmartDashboard.putNumber("Right Speed (A)", rightEncoder.getVelocity());
 
@@ -311,17 +310,19 @@ public class DriveSubsystem extends SubsystemBase {
    * Setup all the motors each time this class is created.
    */
   public DriveSubsystem() {
-    odometry = new DifferentialDriveOdometry(getHeading());
     setupMotors();
+    resetGyro();
+    odometry = new DifferentialDriveOdometry(getHeading());
   }
 
   @Override
   public void periodic() {
-    pose = odometry.update(getHeading(), getLeftDistance(), getRightDistance());
-    SmartDashboard.putNumber("X Pose", pose.getX());
-    SmartDashboard.putNumber("Y Pose", pose.getY());
+    odometry.update(getHeading(), getLeftDistance(), getRightDistance());
+    SmartDashboard.putNumber("X Pose", getPose().getTranslation().getX());
+    SmartDashboard.putNumber("Y Pose", getPose().getTranslation().getY());
     SmartDashboard.putNumber("Left Distance", getLeftDistance());
     SmartDashboard.putNumber("Right Distance", getRightDistance());
+    SmartDashboard.putNumber("Heading", getHeading().getDegrees());
   }
 
 }
