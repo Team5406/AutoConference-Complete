@@ -15,7 +15,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -40,16 +39,16 @@ public class SCurve {
         drive.reset();
         var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
-            new SimpleMotorFeedforward(Constants.AutoConstants.S_VOLTS,
-                                       Constants.AutoConstants.V_VOLTS,
-                                       Constants.AutoConstants.A_VOLTS),
-            Constants.AutoConstants.DRIVE_KINEMATICS,
+            new SimpleMotorFeedforward(Constants.S_VOLTS,
+                                       Constants.V_VOLTS,
+                                       Constants.A_VOLTS),
+            Constants.DRIVE_KINEMATICS,
             10);
 
     TrajectoryConfig config =
-        new TrajectoryConfig(Constants.AutoConstants.MAX_SPEED_METERS_PER_SECOND,
-                             Constants.AutoConstants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED)
-            .setKinematics(Constants.AutoConstants.DRIVE_KINEMATICS)
+        new TrajectoryConfig(Constants.MAX_SPEED_METERS_PER_SECOND,
+                             Constants.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED)
+            .setKinematics(Constants.DRIVE_KINEMATICS)
             .addConstraint(autoVoltageConstraint);
             config.setReversed(false);
 
@@ -74,8 +73,8 @@ public class SCurve {
           
             pathOne,
             drive::getPose,
-            new RamseteController(Constants.AutoConstants.RAMSETE_B, Constants.AutoConstants.RAMSETE_ZETA),
-            Constants.AutoConstants.DRIVE_KINEMATICS,
+            new RamseteController(Constants.RAMSETE_B, Constants.RAMSETE_ZETA),
+            Constants.DRIVE_KINEMATICS,
             drive::outputSpeeds,
             drive);
 

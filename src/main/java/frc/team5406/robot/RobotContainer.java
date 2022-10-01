@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team5406.robot.autos.DriveStraight;
 import frc.team5406.robot.autos.SCurve;
+import frc.team5406.robot.autos.TwoPath;
 import frc.team5406.robot.commands.DefaultDrive;
 import frc.team5406.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,10 +28,11 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_drive = new DriveSubsystem();
 
-  XboxController driverGamepad = new XboxController(Constants.ControllerPort.DRIVER_CONTROLLER);
+  XboxController driverGamepad = new XboxController(Constants.DRIVER_CONTROLLER);
 
   private final DriveStraight driveStraight = new DriveStraight(m_drive);
   private final SCurve sCurve = new SCurve(m_drive);
+  private final TwoPath twoPath = new TwoPath(m_drive);
 
   // A chooser for autonomous commands
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -48,6 +50,7 @@ public class RobotContainer {
     // Add commands to the autonomous command chooser
     m_chooser.setDefaultOption("Drive Straight Auto", driveStraight.getAutonomousCommand());
     m_chooser.addOption("SCurve", sCurve.getAutonomousCommand());
+    m_chooser.addOption("TwoPath", twoPath.getAutonomousCommand());
 
     SmartDashboard.putData(m_chooser);
   }
